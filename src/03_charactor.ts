@@ -3,22 +3,19 @@ import Eases from "eases";
 
 // Parcelがバンドルした画像を利用するためにimportする
 import charaSrc from "./imgs/chara.svg";
+import earthSrc from "./imgs/earth.svg";
 import starSrc from "./imgs/star.svg";
 
 /** キャラがジャンプする高さ */
-const JUMP_HEIGHT = 100;
+const JUMP_HEIGHT = 150;
 /** ジャンプの長さ（フレーム数） */
-const JUMP_DUR = 80;
+const JUMP_DUR = 120;
 /** 背景色 */
 const BG_COLOR = "#133042";
-/** 地面の色 */
-const GROUND_COLOR = "#64a7b3";
-/** ボーダー色 */
-const BORDER_COLOR = "#787161";
 /** 星の軌跡の色 */
-const STAR_STROKE_COLOR = "#ffc62b";
+const STAR_STROKE_COLOR = "#ffaa2b";
 /** 星の数 */
-const STAR_COUNT = 15;
+const STAR_COUNT = 5;
 /** 星の移動アニメーションの長さ */
 const STAR_MOVE_DUR = 100;
 
@@ -43,6 +40,7 @@ type CharaState = {
 const sketch = (p: p5) => {
   // 画像を読み込み
   const chara = p.loadImage(charaSrc);
+  const earth = p.loadImage(earthSrc);
   const star = p.loadImage(starSrc);
 
   // キャラと星の状態を空で初期化
@@ -50,6 +48,18 @@ const sketch = (p: p5) => {
     jumpStartFrame: 0,
   };
   const starStates: StarState[] = [];
+
+  const drawEarth = () => {
+    const SCALE = 0.2;
+    const EARTH_CENTER_X = 304 * SCALE;
+    const EARTH_CENTER_Y = 532 * SCALE;
+    const EARTH_W = 760 * SCALE;
+    const EARTH_H = 840 * SCALE;
+    p.push();
+    p.rotate(70);
+    p.image(earth,-EARTH_CENTER_X, -EARTH_CENTER_Y, EARTH_W, EARTH_H);
+    p.pop();
+  }
 
   /** キャラを描画する */
   const drawChara = (r: number) => {
@@ -149,10 +159,7 @@ const sketch = (p: p5) => {
     // 座標系を中心に移動して、キャラを描画
     p.translate(p.width / 2, p.height / 2);
     p.rotate(p.frameCount);
-    p.fill(p.color(GROUND_COLOR));
-    p.stroke(p.color(BORDER_COLOR));
-    p.strokeWeight(3);
-    p.circle(0, 0, 100);
+    drawEarth();
     drawChara(50);
   };
 
