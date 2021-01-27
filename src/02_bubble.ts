@@ -48,33 +48,35 @@ const sketch = (p: p5) => {
     // カーソルの位置に配置するか？　カーソルを移動してから一定時間はカーソル位置を利用する
     const isUseMousePos = p.frameCount - lastMouseMoved < MOUSE_ACTIVE_FRAMES;
     // 初期位置のx, y座標を決定
-    const x = isUseMousePos ? p.mouseX / p.width + p.random(-0.05, 0.05) : p.random();
+    const x = isUseMousePos
+      ? p.mouseX / p.width + p.random(-0.05, 0.05)
+      : p.random();
     const y = isUseMousePos ? p.mouseY / p.height + p.random(-0.05, 0.05) : 1.2;
     // バブルを追加
     // 奥行きが手前にあるほど、サイズが大きくなり見かけの動きも早くなる
     bubbles.push({
       pos: { x, y },
-      size: p.map(zDist,0 ,1 ,MINSIZE, MAXSIZE),
-      speed: p.map(zDist,0 ,1 ,MINSPEED, MAXSPEED),
-      isFill: Math.random() > 0.5
+      size: p.map(zDist, 0, 1, MINSIZE, MAXSIZE),
+      speed: p.map(zDist, 0, 1, MINSPEED, MAXSPEED),
+      isFill: Math.random() > 0.5,
     });
-  }
+  };
 
   /** 画面外に出たバブルを配列から除去する */
   const removeOutBubbles = () => {
-    bubbles = bubbles.filter(b => b.pos.y * p.height + b.size >= 0);
-  }
+    bubbles = bubbles.filter((b) => b.pos.y * p.height + b.size >= 0);
+  };
 
   /** バブルの位置を更新する */
   const updateBubbles = () => {
-    bubbles.forEach(b => {
+    bubbles.forEach((b) => {
       b.pos.y -= b.speed;
     });
-  }
+  };
 
   /** バブルを描画する */
   const drawBubbles = () => {
-    bubbles.forEach(b => {
+    bubbles.forEach((b) => {
       // ノイズを使って左右の揺れの値を作る
       const noise = p.noise(b.pos.x * 20, b.pos.y * 20);
       const xShift = p.map(noise, 0, 1, -15, 15);
@@ -82,9 +84,13 @@ const sketch = (p: p5) => {
       p.stroke(color);
       b.isFill ? p.fill(color) : p.noFill();
       // バブルの位置に計算したノイズを加えて円を描画する
-      p.circle(b.pos.x * p.width + xShift, b.pos.y * p.height, b.size * p.width);
+      p.circle(
+        b.pos.x * p.width + xShift,
+        b.pos.y * p.height,
+        b.size * p.width
+      );
     });
-  }
+  };
 
   /** 初期化処理 */
   p.setup = () => {
@@ -97,22 +103,21 @@ const sketch = (p: p5) => {
     p.background(p.color(BG_COLOR));
     p.blendMode(p.SCREEN);
     removeOutBubbles();
-    while(bubbles.length < COUNT) {
+    while (bubbles.length < COUNT) {
       addBubble();
     }
     updateBubbles();
     drawBubbles();
     p.pop();
-  }
+  };
 
   p.mouseMoved = () => {
     lastMouseMoved = p.frameCount;
-  }
+  };
 
   p.windowResized = () => {
     p.resizeCanvas(p.windowWidth, p.windowHeight);
-  }
-
-}
+  };
+};
 
 new p5(sketch);
