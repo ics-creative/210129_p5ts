@@ -1,10 +1,8 @@
 import p5 from "p5";
 import Eases from "eases";
 
-// Parcelがバンドルした画像を利用するためにimportする
-import charaSrc from "./imgs/chara.svg";
-import earthSrc from "./imgs/earth.svg";
-import starSrc from "./imgs/star.svg";
+// Parcelがバンドルした画像を利用するためにrequireを使用する
+declare function require(path: string): string;
 
 /** キャラがジャンプする高さ */
 const JUMP_HEIGHT = 150;
@@ -15,7 +13,7 @@ const BG_COLOR = "#133042";
 /** 星の軌跡の色 */
 const STAR_STROKE_COLOR = "#ffaa2b";
 /** 星の数 */
-const STAR_COUNT = 5;
+const STAR_COUNT = 12;
 /** 星の移動アニメーションの長さ */
 const STAR_MOVE_DUR = 100;
 
@@ -39,9 +37,9 @@ type CharaState = {
 
 const sketch = (p: p5) => {
   // 画像を読み込み
-  const chara = p.loadImage(charaSrc);
-  const earth = p.loadImage(earthSrc);
-  const star = p.loadImage(starSrc);
+  const chara = p.loadImage(require("./imgs/chara.svg"));
+  const earth = p.loadImage(require("./imgs/earth.svg"));
+  const star = p.loadImage(require("./imgs/star.svg"));
 
   // キャラと星の状態を空で初期化
   const charaState: CharaState = {
@@ -57,34 +55,37 @@ const sketch = (p: p5) => {
     const EARTH_H = 840 * SCALE;
     p.push();
     p.rotate(70);
-    p.image(earth,-EARTH_CENTER_X, -EARTH_CENTER_Y, EARTH_W, EARTH_H);
+    p.image(earth, -EARTH_CENTER_X, -EARTH_CENTER_Y, EARTH_W, EARTH_H);
     p.pop();
-  }
+  };
 
   /** キャラを描画する */
   const drawChara = (r: number) => {
+    const SCALE = 0.4;
+    const CHARA_W = 258 * SCALE;
+    const CHARA_H = 358 * SCALE;
     let jumpY = 0;
     // ジャンプ中の場合、進捗度合いを求めて現時点の高さに変換する
     if (charaState.jumpStartFrame) {
+      // ジャンプが始まってからのフレーム数
+      const jumpingFrameCount = p.frameCount - charaState.jumpStartFrame;
       // 進捗度（ジャンプ開始=0 ... 終了=1）
-      const progress = Math.min(
-        (p.frameCount - charaState.jumpStartFrame) / JUMP_DUR,
-        1
-      );
+      const progress = p.constrain(jumpingFrameCount / JUMP_DUR, 0, 1);
       if (progress == 1) {
+        // ジャンプが終了したので、開始時刻をクリア
         charaState.jumpStartFrame = 0;
       }
       // 進捗度をイージング関数でジャンプの高さに変換
       const easedProgress =
         progress < 0.5
-          // ジャンプの前半
-          ? Eases.expoOut(progress * 2)
-          // ジャンプの後半
-          : 1 - Eases.bounceOut((progress - 0.5) * 2);
+          ? // ジャンプの前半
+            Eases.expoOut(progress * 2)
+          : // ジャンプの後半
+            1 - Eases.bounceOut((progress - 0.5) * 2);
       jumpY = easedProgress * JUMP_HEIGHT;
     }
     // キャラの足元を基準点として、上で求めた位置に描画
-    p.image(chara, -chara.width / 2, -chara.height - r - jumpY);
+    p.image(chara, -CHARA_W / 2, -CHARA_H - r - jumpY, CHARA_W, CHARA_H);
   };
 
   /** 星を追加する */
@@ -160,7 +161,7 @@ const sketch = (p: p5) => {
     p.translate(p.width / 2, p.height / 2);
     p.rotate(p.frameCount);
     drawEarth();
-    drawChara(50);
+    drawChara(55);
   };
 
   /** クリック時にキャラのジャンプを開始する */
