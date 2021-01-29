@@ -1,8 +1,8 @@
-import p5 from "p5";
 import Eases from "eases";
+import p5 from "p5";
 
-// Parcelがバンドルした画像を利用するためにrequireを使用する
-declare function require(path: string): string;
+//@ts-ignore
+import Imgs from "./imgs/*.svg";
 
 /** キャラがジャンプする高さ */
 const JUMP_HEIGHT = 150;
@@ -37,9 +37,9 @@ type CharaState = {
 
 const sketch = (p: p5) => {
   // 画像を読み込み
-  const chara = p.loadImage(require("./imgs/chara.svg"));
-  const earth = p.loadImage(require("./imgs/earth.svg"));
-  const star = p.loadImage(require("./imgs/star.svg"));
+  const chara = p.loadImage(Imgs["chara"]);
+  const earth = p.loadImage(Imgs["earth"]);
+  const star = p.loadImage(Imgs["star"]);
 
   // キャラと星の状態を空で初期化
   const charaState: CharaState = {
