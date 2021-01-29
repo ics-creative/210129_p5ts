@@ -12,5 +12,6 @@
   "dependencies": {
     "eases": "^1.0.8",
     "p5": "^1.2.0"
-  }
+  },
+  "private": true
 }
